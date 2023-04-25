@@ -9,7 +9,7 @@ export const AppDataSource = new DataSource({
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
     synchronize: true,
-    logging: true,
+    logging: false,
     entities: ["dist/entities/**/*.js"],
     migrationsTableName: "air_quality_data_migration",
     migrations: ["src/migrations/*.ts"],

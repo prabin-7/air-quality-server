@@ -49,7 +49,7 @@ AppDataSource.initialize()
 
 app.use(
     cors({
-      origin: ["*"],
+      origin: process.env.CLIENT_ENDPOINT,
       credentials: true,
       exposedHeaders: ["set-cookie"],
     })
@@ -69,15 +69,7 @@ const io = new Server(server, {
   }
 });
 
-io.on("connection", (socket) => {
-  
-  console.log(socket.id)
-  
-  
-  socket.on("message", (e) => {
-    console.log(e)
-  })
-});
+
 
 
 app.post("/", async (req,res) => {
@@ -86,6 +78,8 @@ app.post("/", async (req,res) => {
       smoke_val: string,
       co_val: string
     }
+
+    console.log(data)
 
     const gasData = await ExhaustQuality.find({
       take: 10,

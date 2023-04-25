@@ -50,7 +50,7 @@ transporter
     .then(() => console.log("TRANSPORTER VERIFIED"))
     .catch(console.error);
 app.use((0, cors_1.default)({
-    origin: ["*"],
+    origin: process.env.CLIENT_ENDPOINT,
     credentials: true,
     exposedHeaders: ["set-cookie"],
 }));
@@ -60,14 +60,9 @@ const io = new socket_io_1.Server(server, {
         methods: ["GET", "POST"]
     }
 });
-io.on("connection", (socket) => {
-    console.log(socket.id);
-    socket.on("message", (e) => {
-        console.log(e);
-    });
-});
 app.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const data = req.body;
+    console.log(data);
     const gasData = yield ExhaustQuality_1.ExhaustQuality.find({
         take: 10,
         order: {
