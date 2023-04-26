@@ -105,9 +105,9 @@ app.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             subject: "Alert Mail",
             text: `THRESHOLD LIMIT EXCEDED !!!
                 DATA: 
-                    smoke: ${data.smoke_val},
-                    lpg: ${data.lpg_val},
-                    co: ${data.co_val}
+                    Smoke: ${data.smoke_val} ppm,
+                    LPG: ${data.lpg_val} ppm,
+                    Co: ${data.co_val} ppm
         
         `,
         })

@@ -128,9 +128,9 @@ app.post("/", async (req,res) => {
         subject: "Alert Mail", // Subject line
         text: `THRESHOLD LIMIT EXCEDED !!!
                 DATA: 
-                    smoke: ${data.smoke_val},
-                    lpg: ${data.lpg_val},
-                    co: ${data.co_val}
+                    Smoke: ${data.smoke_val} ppm,
+                    LPG: ${data.lpg_val} ppm,
+                    Co: ${data.co_val} ppm
         
         `, // plain text body
       })
