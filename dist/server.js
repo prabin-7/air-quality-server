@@ -21,7 +21,7 @@ const ExhaustQuality_1 = require("./entities/ExhaustQuality");
 const http_1 = __importDefault(require("http"));
 const socket_io_1 = require("socket.io");
 const app = (0, express_1.default)();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 let countToSaveInDB = 0;
 const MAX_SMOKE = 100;
 const MAX_LPG = 1000;
@@ -63,23 +63,35 @@ const io = new socket_io_1.Server(server, {
 app.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const data = req.body;
     console.log(data);
-    const gasData = yield ExhaustQuality_1.ExhaustQuality.find({
-        take: 10,
-        order: {
-            created_at: "DESC"
-        }
-    });
-    io.sockets.emit("tableData", gasData);
-    io.sockets.emit("sensorData", data);
+    try {
+        const gasData = yield ExhaustQuality_1.ExhaustQuality.find({
+            take: 10,
+            order: {
+                created_at: "DESC"
+            }
+        });
+        io.sockets.emit("tableData", gasData);
+        io.sockets.emit("sensorData", data);
+    }
+    catch (e) {
+        console.log("Failed to send data");
+        console.error(e);
+    }
     if (countToSaveInDB === 15 ||
         parseFloat(data.lpg_val) >= MAX_LPG ||
         parseFloat(data.smoke_val) >= MAX_SMOKE ||
         parseFloat(data.co_val) >= MAX_CO) {
-        yield ExhaustQuality_1.ExhaustQuality.create({
-            smoke: parseFloat(data.smoke_val),
-            lpg: parseFloat(data.lpg_val),
-            co: parseFloat(data.co_val)
-        }).save();
+        try {
+            yield ExhaustQuality_1.ExhaustQuality.create({
+                smoke: parseFloat(data.smoke_val),
+                lpg: parseFloat(data.lpg_val),
+                co: parseFloat(data.co_val)
+            }).save();
+        }
+        catch (e) {
+            console.log("Failed to add data to DB");
+            console.error(e);
+        }
         console.log("SAVED");
         countToSaveInDB = 0;
     }
@@ -88,10 +100,16 @@ app.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         parseFloat(data.co_val) >= MAX_CO) {
         transporter
             .sendMail({
-            from: "prasadrocket64@gmail.com",
+            from: process.env.SMPT_EMAIL,
             to: "prabinneupane2001@gmail.com",
-            subject: "Verification Email",
-            text: JSON.stringify(data),
+            subject: "Alert Mail",
+            text: `THRESHOLD LIMIT EXCEDED !!!
+                DATA: 
+                    smoke: ${data.smoke_val},
+                    lpg: ${data.lpg_val},
+                    co: ${data.co_val}
+        
+        `,
         })
             .then((info) => {
             console.log({ info });

@@ -8,7 +8,7 @@ import http from "http";
 import { Server } from "socket.io";
 
 const app = express()
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 let countToSaveInDB = 0;
 
 const MAX_SMOKE = 100;
@@ -81,6 +81,8 @@ app.post("/", async (req,res) => {
 
     console.log(data)
 
+    try {
+
     const gasData = await ExhaustQuality.find({
       take: 10,
       order: {
@@ -89,18 +91,26 @@ app.post("/", async (req,res) => {
     })
     io.sockets.emit("tableData", gasData)
     io.sockets.emit("sensorData", data)
-
+  } catch (e) {
+    console.log("Failed to send data")
+    console.error(e)
+  } 
     if(countToSaveInDB === 15 ||
         parseFloat(data.lpg_val) >= MAX_LPG || 
         parseFloat(data.smoke_val) >= MAX_SMOKE || 
         parseFloat(data.co_val) >= MAX_CO) {
 
       // save to DB
+      try {
       await ExhaustQuality.create({
         smoke: parseFloat(data.smoke_val),
         lpg: parseFloat(data.lpg_val),
         co: parseFloat(data.co_val)
       }).save()
+    } catch (e) {
+      console.log("Failed to add data to DB")
+      console.error(e)
+    }
       console.log("SAVED")
       countToSaveInDB = 0
     }
@@ -113,10 +123,16 @@ app.post("/", async (req,res) => {
       // SEND MAIL
         transporter
       .sendMail({
-        from: "prasadrocket64@gmail.com", // sender address
+        from: process.env.SMPT_EMAIL, // sender address
         to: "prabinneupane2001@gmail.com", // list of receivers
-        subject: "Verification Email", // Subject line
-        text: JSON.stringify(data), // plain text body
+        subject: "Alert Mail", // Subject line
+        text: `THRESHOLD LIMIT EXCEDED !!!
+                DATA: 
+                    smoke: ${data.smoke_val},
+                    lpg: ${data.lpg_val},
+                    co: ${data.co_val}
+        
+        `, // plain text body
       })
       .then((info) => {
         console.log({ info });
