@@ -12,7 +12,7 @@ const PORT = process.env.PORT || 3000;
 let countToSaveInDB = 0;
 
 const MAX_SMOKE = 100;
-const MAX_LPG = 1000;
+const MAX_LPG = 100;
 const MAX_CO = 25;
 
 // Parser MiddleWare
