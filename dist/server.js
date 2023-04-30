@@ -77,7 +77,7 @@ app.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         console.log("Failed to send data");
         console.error(e);
     }
-    if (countToSaveInDB === 15 ||
+    if (countToSaveInDB === 10 ||
         parseFloat(data.lpg_val) >= MAX_LPG ||
         parseFloat(data.smoke_val) >= MAX_SMOKE ||
         parseFloat(data.co_val) >= MAX_CO) {
@@ -103,7 +103,7 @@ app.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             from: process.env.SMPT_EMAIL,
             to: "prabinneupane2001@gmail.com",
             subject: "Alert Mail",
-            text: `THRESHOLD LIMIT EXCEDED !!!
+            text: `THRESHOLD LIMIT EXCEEDED !!!
                 DATA: 
                     Smoke: ${data.smoke_val} ppm,
                     LPG: ${data.lpg_val} ppm,
